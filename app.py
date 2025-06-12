@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import sys
 import pysqlite3
 sys.modules['sqlite3'] = pysqlite3
