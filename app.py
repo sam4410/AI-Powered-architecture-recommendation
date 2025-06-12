@@ -1,8 +1,9 @@
 #!/usr/bin/env python
-import sqlite3
+import sys
+import pysqlite3
+sys.modules['sqlite3'] = pysqlite3
 import streamlit as st
 import streamlit.components.v1 as components
-import sys
 import warnings
 from datetime import datetime
 from dataclasses import dataclass
