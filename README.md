@@ -39,13 +39,17 @@ graph TD
     B --> C[Scalability Architect]
     B --> D[Team Structure Analyst]
     B --> E[Cost Optimization Analyst]
+    B --> F[Security & Compliance Expert]
+    B --> G[Technology Integration Specialist]
+
+    C --> H[Architecture Synthesis Expert]
+    D --> H
+    E --> H
+    F --> H
+    G --> H
     
-    C --> F[Architecture Synthesis Expert]
-    D --> F
-    E --> F
-    
-    F --> G[Final Recommendation Report]
-    G --> H[Interactive Results Dashboard]
+    H --> I[Final Recommendation Report]
+    I --> J[Interactive Results Dashboard]
     
     style A fill:#e1f5fe
     style B fill:#f3e5f5
@@ -55,6 +59,8 @@ graph TD
     style F fill:#e0f2f1
     style G fill:#f1f8e9
     style H fill:#e3f2fd
+    style I fill:#e0f2f1
+    style J fill:#e8f5e8
 ```
 
 ### 🤖 AI Agent Roles
