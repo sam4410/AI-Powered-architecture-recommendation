@@ -499,8 +499,8 @@ def main():
             
             ### ✨ Key Features
             
-            - 🤖 **Multi-Agent AI System**: Four specialized AI experts
-            - 📊 **Comprehensive Analysis**: Scalability, team, and cost factors
+            - 🤖 **Multi-Agent AI System**: Six specialized AI experts
+            - 📊 **Comprehensive Analysis**: Scalability, team, cost, security and integration factors
             - 🎯 **Tailored Recommendations**: Specific to your context
             - 📈 **Implementation Roadmap**: Phased approach with timelines
             - 💰 **Cost Optimization**: Budget-conscious recommendations
