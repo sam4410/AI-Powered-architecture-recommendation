@@ -375,13 +375,22 @@ def run_analysis(requirements: RequirementContext):
         status_text.text("✅ Analysis completed successfully!")
         
         # Display results
-        st.markdown("## 📊 Architecture Recommendation Report")
+        if "analysis_result" in st.session_state:
+            st.markdown("## 📊 Architecture Recommendation Report")
+            st.write(st.session_state.analysis_result)
         
         # Format and display the result
-        if hasattr(result, 'raw') and result.raw:
-            st.markdown(result.raw)
-        elif isinstance(result, str):
+        if isinstance(result, str):
             st.markdown(result)
+        
+        elif hasattr(result, "final_output"):
+            st.markdown(result.final_output)
+        
+        elif hasattr(result, "tasks_output"):
+            for task in result.tasks_output:
+                st.markdown(f"### {task.task_name}")
+                st.markdown(task.output)
+        
         else:
             st.write(result)
         
