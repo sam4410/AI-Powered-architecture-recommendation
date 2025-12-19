@@ -6,6 +6,7 @@ import streamlit as st
 import streamlit.components.v1 as components
 import warnings
 from datetime import datetime
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from typing import List, Optional
 from enum import Enum
@@ -363,8 +364,12 @@ def run_analysis(requirements: RequirementContext):
         progress_bar.progress(60)
         
         # Run the crew analysis
-        with capture_output() as (stdout_buffer, stderr_buffer):
-            result = crew_instance.crew().kickoff(inputs=inputs)
+        with ThreadPoolExecutor(max_workers=1) as executor:
+            future = executor.submit(
+                MultiAgentArchitectureRecommender().crew().kickoff,
+                inputs=inputs
+            )
+            result = future.result()
         
         progress_bar.progress(100)
         status_text.text("✅ Analysis completed successfully!")
