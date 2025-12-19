@@ -300,19 +300,17 @@ def capture_output():
         sys.stderr = old_stderr
 
 def run_analysis(requirements: RequirementContext):
-    """Run the CrewAI analysis with the given requirements"""
-    
-    # Display analysis start
+    """Run the CrewAI analysis with Streamlit-safe execution"""
+
     st.success("🚀 Starting Architecture Analysis...")
-    
-    # Create progress tracking
+
     progress_bar = st.progress(0)
     status_text = st.empty()
-    
-    # Display key requirements summary
+
+    # --- Show summary ---
     with st.expander("📋 Analysis Parameters", expanded=True):
         col1, col2, col3 = st.columns(3)
-        
+
         with col1:
             st.markdown(f"""
                 <div class="metric-card">
@@ -323,7 +321,7 @@ def run_analysis(requirements: RequirementContext):
                     <p>⏱️ {requirements.latency_requirements_ms}ms latency</p>
                 </div>
             """, unsafe_allow_html=True)
-        
+
         with col2:
             st.markdown(f"""
                 <div class="metric-card">
@@ -334,7 +332,7 @@ def run_analysis(requirements: RequirementContext):
                     <p>🚀 {requirements.development_velocity_priority} velocity</p>
                 </div>
             """, unsafe_allow_html=True)
-        
+
         with col3:
             st.markdown(f"""
                 <div class="metric-card">
@@ -345,73 +343,53 @@ def run_analysis(requirements: RequirementContext):
                     <p>🌍 {requirements.geographic_distribution}</p>
                 </div>
             """, unsafe_allow_html=True)
-    
-    # Run the analysis
+
     try:
-        status_text.text("Initializing AI agents...")
         progress_bar.progress(20)
-        
-        # Convert requirements to inputs
+        status_text.text("Initializing AI agents...")
+
         inputs = requirements.to_dict()
-        
-        status_text.text("Starting multi-agent analysis...")
+
         progress_bar.progress(40)
-        
-        # Initialize CrewAI
-        crew_instance = MultiAgentArchitectureRecommender()
-        
         status_text.text("Agents are analyzing your requirements...")
-        progress_bar.progress(60)
-        
-        # Run the crew analysis
+
+        # --- IMPORTANT FIX: run CrewAI in background thread ---
+        def run_crew():
+            crew = MultiAgentArchitectureRecommender().crew()
+            return crew.kickoff(inputs=inputs)
+
         with ThreadPoolExecutor(max_workers=1) as executor:
-            future = executor.submit(
-                MultiAgentArchitectureRecommender().crew().kickoff,
-                inputs=inputs
-            )
+            future = executor.submit(run_crew)
             result = future.result()
-        
+
         progress_bar.progress(100)
         status_text.text("✅ Analysis completed successfully!")
-        
-        # Display results
-        if "analysis_result" in st.session_state:
-            st.markdown("## 📊 Architecture Recommendation Report")
-            st.write(st.session_state.analysis_result)
-        
-        # Format and display the result
+
+        # --- Persist result ---
+        st.session_state.analysis_result = result
+
+        # --- Render result safely ---
+        st.markdown("## 📊 Architecture Recommendation Report")
+
         if isinstance(result, str):
             st.markdown(result)
-        
+
         elif hasattr(result, "final_output"):
             st.markdown(result.final_output)
-        
+
         elif hasattr(result, "tasks_output"):
             for task in result.tasks_output:
                 st.markdown(f"### {task.task_name}")
                 st.markdown(task.output)
-        
+
         else:
             st.write(result)
-        
-        # Display captured output if needed (for debugging)
-        with st.expander("🔍 Analysis Logs", expanded=False):
-            stdout_content = stdout_buffer.getvalue()
-            stderr_content = stderr_buffer.getvalue()
-            
-            if stdout_content:
-                st.text("Standard Output:")
-                st.code(stdout_content)
-            
-            if stderr_content:
-                st.text("Error Output:")
-                st.code(stderr_content)
-        
+
         return result
-        
+
     except Exception as e:
-        st.error(f"❌ Analysis failed: {str(e)}")
-        st.error("Please check your CrewAI configuration and try again.")
+        st.error("❌ Analysis failed")
+        st.exception(e)
         return None
 
 def get_form_defaults():
