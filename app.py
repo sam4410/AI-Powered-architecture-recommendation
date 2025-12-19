@@ -378,10 +378,24 @@ def run_analysis(requirements: RequirementContext):
             st.markdown(result.final_output)
 
         elif hasattr(result, "tasks_output"):
-            for task in result.tasks_output:
-                st.markdown(f"### {task.task_name}")
-                st.markdown(task.output)
-
+            for i, task in enumerate(result.tasks_output, start=1):
+        
+                # Try to get a meaningful title safely
+                title = (
+                    getattr(task, "description", None)
+                    or getattr(task, "name", None)
+                    or f"Task {i}"
+                )
+        
+                st.markdown(f"### {title}")
+        
+                # Show task output safely
+                if hasattr(task, "output") and task.output:
+                    st.markdown(task.output)
+                elif hasattr(task, "raw") and task.raw:
+                    st.markdown(task.raw)
+                else:
+                    st.write(task)
         else:
             st.write(result)
 
